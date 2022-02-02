@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Interest Rate Calculator</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+    <style>
+        table,
+        th,
+        td {
+            border: 1px solid black;
+            border-collapse: collapse;
+        }
+
+        table th {
+            text-transform: capitalize;
+        }
+
+    </style>
+</head>
+
+<body>
+    <form id="formMain">
+        Present Value:
+        <input type="number" name="presentValue">
+        <br />
+        Future Value:
+        <input type="number" name="futureValue">
+        <br />
+        Payment Value:
+        <input type="number" name="paymentValue">
+        <select name="paymentValueDate">
+            <option value="days">Days</option>
+            <option value="months">Months</option>
+            <option value="years">Years</option>
+        </select>
+        <br />
+        Interest Rate (%):
+        <input type="number" name="interestRate" step="0.01">
+        <select name="interestRateDate">
+            <option value="days">Days</option>
+            <option value="months">Months</option>
+            <option value="years">Years</option>
+        </select>
+        <br />
+        Interest Time:
+        <input type="number" name="interestTime">
+        <select name="interestTimeDate">
+            <option value="days">Days</option>
+            <option value="months">Months</option>
+            <option value="years">Years</option>
+        </select>
+        <br />
+        <button type="submit">
+            <i class="fa fa-spinner fa-spin" style="display: none;"></i>
+            Send
+        </button>
+    </form>
+    <table id="tableMain" style="margin-top: 10px;">
+        <thead>
+            <tr>
+                <th>Days</th>
+                <th>Money</th>
+                <th>Interest</th>
+            </tr>
+        </thead>
+        <tbody></tbody>
+    </table>
+    <script src="./main.js"></script>
+</body>
+
+</html>
