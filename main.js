@@ -17,7 +17,12 @@ window.addEventListener("DOMContentLoaded", () => {
   const interestRateDateDom = document.querySelector(
     "select[name='interestRateDate']"
   );
-  const interestTimeDom = document.querySelector("input[name='interestTime']");
+  const interestRateTermDom = document.querySelector(
+    "input[name='interestRateTerm']"
+  );
+  const interestRateTermDateDom = document.querySelector(
+    "select[name='interestRateTermDate']"
+  );
   const interestTimeDateDom = document.querySelector(
     "select[name='interestTimeDate']"
   );
@@ -25,30 +30,40 @@ window.addEventListener("DOMContentLoaded", () => {
   formMain.addEventListener("submit", async (e) => {
     e.preventDefault();
     loading.style.display = "inline-block";
-    document.querySelector("#tableMain thead tr th:nth-child(1)").innerText =
-      interestTimeDateDom.value;
     await delay(1000);
+    document.querySelector("#tableMain thead tr th:nth-child(1)").innerText =
+      interestRateTermDateDom.value;
 
-    const paymentValue = parseFloat(paymentValueDom.value || 0);
-    const interestRate = parseFloat(interestRateDom.value || 0);
-    const interestTime = parseFloat(interestTimeDom.value || 0);
+    const interestRateTerm = parseFloat(interestRateTermDom.value || 0);
 
     let renderResult = "";
     let presentValue = rootPresentValue;
+    let paymentPresentValue = rootPresentValue;
+    let previousPresentValue = rootPresentValue;
 
-    for (let index = 1; index <= interestTime; index += 1) {
+    for (let index = 1; index <= interestRateTerm; index += 1) {
+      previousPresentValue = presentValue;
+
       if (isPayment(index)) {
+        const paymentValue = getPaymentValue();
         presentValue += paymentValue;
+        paymentPresentValue += paymentValue;
       }
 
-      presentValue += presentValue * getInterestRateByTime(interestRate);
+      if (isCalculateInterest(index)) {
+        presentValue += (presentValue * getInterestRate()) / 100;
+      }
 
       renderResult += ` <tr>
                             <td>${index}</td>
-                            <td>${formatCurrency(presentValue)}</td>
+                            <td>${formatCurrency(paymentPresentValue)}</td>
+                            <td>${formatCurrency(
+                              presentValue - previousPresentValue
+                            )}</td>
                             <td>${formatCurrency(
                               presentValue - rootPresentValue
                             )}</td>
+                            <td>${formatCurrency(presentValue)}</td>
                         </tr>`;
     }
 
@@ -59,20 +74,72 @@ window.addEventListener("DOMContentLoaded", () => {
   });
 
   const isPayment = (index) => {
-    switch (paymentValueDateDom.value) {
+    switch (interestRateTermDateDom.value) {
       case "days":
-        return index % 1 === 0;
+        switch (paymentValueDateDom.value) {
+          case "days":
+            return index % 1 === 0;
+          case "months":
+            return index % 30 === 0;
+          case "years":
+            return index % 365 === 0;
+        }
       case "months":
-        return index % 30 === 0;
+        switch (paymentValueDateDom.value) {
+          case "days":
+            return true;
+          case "months":
+            return index % 1 === 0;
+          case "years":
+            return index % 12 === 0;
+        }
       case "years":
-        return index % 365 === 0;
+        switch (paymentValueDateDom.value) {
+          case "days":
+          case "months":
+          case "years":
+            return true;
+        }
       default:
         return false;
     }
   };
 
-  const getInterestRateByTime = (interestRate) => {
-    switch (interestTimeDateDom.value) {
+  const getPaymentValue = (index) => {
+    const paymentValue = parseFloat(paymentValueDom.value || 0);
+    switch (interestRateTermDateDom.value) {
+      case "days":
+        switch (paymentValueDateDom.value) {
+          case "days":
+          case "months":
+          case "years":
+            return paymentValue;
+        }
+      case "months":
+        switch (paymentValueDateDom.value) {
+          case "days":
+            return paymentValue * 30;
+          case "months":
+          case "years":
+            return paymentValue;
+        }
+      case "years":
+        switch (paymentValueDateDom.value) {
+          case "days":
+            return paymentValue * 365;
+          case "months":
+            return paymentValue * 12;
+          case "years":
+            return paymentValue;
+        }
+      default:
+        return 0;
+    }
+  };
+
+  const getInterestRate = () => {
+    const interestRate = parseFloat(interestRateDom.value || 0);
+    switch (interestRateTermDateDom.value) {
       case "days":
         switch (interestRateDateDom.value) {
           case "days":
@@ -102,6 +169,38 @@ window.addEventListener("DOMContentLoaded", () => {
         }
       default:
         return 0;
+    }
+  };
+
+  const isCalculateInterest = (index) => {
+    switch (interestRateTermDateDom.value) {
+      case "days":
+        switch (interestTimeDateDom.value) {
+          case "days":
+            return index % 1 === 0;
+          case "months":
+            return index % 30 === 0;
+          case "years":
+            return index % 365 === 0;
+        }
+      case "months":
+        switch (interestTimeDateDom.value) {
+          case "days":
+            return true;
+          case "months":
+            return index % 1 === 0;
+          case "years":
+            return index % 12 === 0;
+        }
+      case "years":
+        switch (interestTimeDateDom.value) {
+          case "days":
+          case "months":
+          case "years":
+            return true;
+        }
+      default:
+        return false;
     }
   };
 });
