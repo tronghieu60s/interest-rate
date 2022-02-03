@@ -257,7 +257,7 @@ const formatCurrency = (value) => {
 };
 
 const renderChangeStorage = () => {
-  const storage = JSON.parse(localStorage.getItem("inputStorage"));
+  const storage = JSON.parse(localStorage.getItem("inputStorage")) || {};
   const allInput = document.querySelectorAll("input");
   const allSelect = document.querySelectorAll("select");
 
